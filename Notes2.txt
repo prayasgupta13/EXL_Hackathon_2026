@@ -1,0 +1,42 @@
+databricks PAT token: dapi76ffe15b443d0a8652adcaf96597f544-3
+claude anthropic API Key:
+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
+Commands on terminal:
+python -m venv .venv
+.venv\Scripts\activate.bat  //issues
+pip install -r requirements.txt
+cp .env.example .env
+python run_accelerator.py  --offline 
+python run_accelerator.py --sql inputs/sample_procedures.sql --offline
+
+Import-Csv outputs\lineage.csv | Select-Object -ExpandProperty procedure_name -Unique
+(Import-Csv outputs\lineage.csv).Count
+ Remove-Item outputs\*.csv
+Remove-Item outputs\generated -Recurse -Force
+Get-ChildItem -Recurse -Directory -Filter __pycache__ | Remove-Item -Recurse -Force   
+ Get-ChildItem outputs\generated -Directory | Select-Object name  
+
+---------------
+.env file
+
+--------------------------------------------------
+schema in sql and raw
+Generates STTM from procedure
+identifies schema drift
+generates lineage in databricks
+Generates equivalent code from dwh layer with scd2 enablede
+
+
+
+1.schema registry table in databricks like source to target mapping
+2.lineage table in databricks calculates column lineage from raw-->std-->dwh
+3.execution log table captures execution at three levels like parse, registry and codegen
+4.schema drift compares source table column with raw layer column at three levels like column name change, type mismatch. Only type conversion is handled like dor dim policy(pre_amt)
+
+
+---------------------------------
+steps to execute
+-------------------------------
+Remove-Item outputs\*.csv
+Remove-Item outputs\generated -Recurse -Force
+python run_accelerator.py  
